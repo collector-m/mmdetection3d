@@ -18,21 +18,24 @@ A clear and concise description of what the bug is.
 
 **Reproduction**
 1. What command or script did you run?
+
 ```
 A placeholder for the command.
 ```
+
 2. Did you make any modifications on the code or config? Did you understand what you have modified?
 3. What dataset did you use?
 
 **Environment**
 
-1. Please run `python mmdet/utils/collect_env.py` to collect necessary environment infomation and paste it here.
+1. Please run `python mmdet3d/utils/collect_env.py` to collect necessary environment infomation and paste it here.
 2. You may add addition that may be helpful for locating the problem, such as
     - How you installed PyTorch [e.g., pip, conda, source]
     - Other environment variables that may be related (such as `$PATH`, `$LD_LIBRARY_PATH`, `$PYTHONPATH`, etc.)
 
 **Error traceback**
 If applicable, paste the error trackback here.
+
 ```
 A placeholder for trackback.
 ```

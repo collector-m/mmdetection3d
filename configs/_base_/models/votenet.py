@@ -10,10 +10,14 @@ model = dict(
                      (128, 128, 256)),
         fp_channels=((256, 256), (256, 256)),
         norm_cfg=dict(type='BN2d'),
-        pool_mod='max'),
+        sa_cfg=dict(
+            type='PointSAModule',
+            pool_mod='max',
+            use_xyz=True,
+            normalize_xyz=True)),
     bbox_head=dict(
         type='VoteHead',
-        vote_moudule_cfg=dict(
+        vote_module_cfg=dict(
             in_channels=256,
             vote_per_seed=1,
             gt_per_seed=3,
@@ -27,13 +31,15 @@ model = dict(
                 reduction='none',
                 loss_dst_weight=10.0)),
         vote_aggregation_cfg=dict(
+            type='PointSAModule',
             num_point=256,
             radius=0.3,
             num_sample=16,
             mlp_channels=[256, 128, 128, 128],
             use_xyz=True,
             normalize_xyz=True),
-        feat_channels=(128, 128),
+        pred_layer_cfg=dict(
+            in_channels=128, shared_conv_channels=(128, 128), bias=True),
         conv_cfg=dict(type='Conv1d'),
         norm_cfg=dict(type='BN1d'),
         objectness_loss=dict(
@@ -56,8 +62,12 @@ model = dict(
         size_res_loss=dict(
             type='SmoothL1Loss', reduction='sum', loss_weight=10.0 / 3.0),
         semantic_loss=dict(
-            type='CrossEntropyLoss', reduction='sum', loss_weight=1.0)))
-# model training and testing settings
-train_cfg = dict(pos_distance_thr=0.3, neg_distance_thr=0.6, sample_mod='vote')
-test_cfg = dict(
-    sample_mod='seed', nms_thr=0.25, score_thr=0.05, per_class_proposal=True)
+            type='CrossEntropyLoss', reduction='sum', loss_weight=1.0)),
+    # model training and testing settings
+    train_cfg=dict(
+        pos_distance_thr=0.3, neg_distance_thr=0.6, sample_mod='vote'),
+    test_cfg=dict(
+        sample_mod='seed',
+        nms_thr=0.25,
+        score_thr=0.05,
+        per_class_proposal=True))

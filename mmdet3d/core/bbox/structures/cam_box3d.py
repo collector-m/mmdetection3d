@@ -1,6 +1,7 @@
 import numpy as np
 import torch
 
+from mmdet3d.core.points import BasePoints
 from .base_box3d import BaseInstance3DBoxes
 from .utils import limit_period, rotation_3d_in_axis
 
@@ -12,7 +13,7 @@ class CameraInstance3DBoxes(BaseInstance3DBoxes):
 
     .. code-block:: none
 
-                z front (yaw=0.5*pi)
+                z front (yaw=-0.5*pi)
                /
               /
              0 ------> x right (yaw=0)
@@ -23,8 +24,11 @@ class CameraInstance3DBoxes(BaseInstance3DBoxes):
 
     The relative coordinate of bottom center in a CAM box is (0.5, 1.0, 0.5),
     and the yaw is around the y axis, thus the rotation axis=1.
-    The yaw is 0 at the positive direction of x axis, and increases from
+    The yaw is 0 at the positive direction of x axis, and decreases from
     the positive direction of x to the positive direction of z.
+
+    A refactor is ongoing to make the three coordinate systems
+    easier to understand and convert between each other.
 
     Attributes:
         tensor (torch.Tensor): Float matrix of N x box_dim.
@@ -33,6 +37,41 @@ class CameraInstance3DBoxes(BaseInstance3DBoxes):
         with_yaw (bool): If True, the value of yaw will be set to 0 as minmax
             boxes.
     """
+
+    def __init__(self,
+                 tensor,
+                 box_dim=7,
+                 with_yaw=True,
+                 origin=(0.5, 1.0, 0.5)):
+        if isinstance(tensor, torch.Tensor):
+            device = tensor.device
+        else:
+            device = torch.device('cpu')
+        tensor = torch.as_tensor(tensor, dtype=torch.float32, device=device)
+        if tensor.numel() == 0:
+            # Use reshape, so we don't end up creating a new tensor that
+            # does not depend on the inputs (and consequently confuses jit)
+            tensor = tensor.reshape((0, box_dim)).to(
+                dtype=torch.float32, device=device)
+        assert tensor.dim() == 2 and tensor.size(-1) == box_dim, tensor.size()
+
+        if tensor.shape[-1] == 6:
+            # If the dimension of boxes is 6, we expand box_dim by padding
+            # 0 as a fake yaw and set with_yaw to False.
+            assert box_dim == 6
+            fake_rot = tensor.new_zeros(tensor.shape[0], 1)
+            tensor = torch.cat((tensor, fake_rot), dim=-1)
+            self.box_dim = box_dim + 1
+            self.with_yaw = False
+        else:
+            self.box_dim = box_dim
+            self.with_yaw = with_yaw
+        self.tensor = tensor.clone()
+
+        if origin != (0.5, 1.0, 0.5):
+            dst = self.tensor.new_tensor((0.5, 1.0, 0.5))
+            src = self.tensor.new_tensor(origin)
+            self.tensor[:, :3] += self.tensor[:, 3:6] * (dst - src)
 
     @property
     def height(self):
@@ -61,7 +100,8 @@ class CameraInstance3DBoxes(BaseInstance3DBoxes):
 
     @property
     def corners(self):
-        """torch.Tensor: Coordinates of corners of all the boxes in shape (N, 8, 3).
+        """torch.Tensor: Coordinates of corners of all the boxes in
+                         shape (N, 8, 3).
 
         Convert the boxes to  in clockwise order, in the form of
         (x0y0z0, x0y0z1, x0y1z1, x0y1z0, x1y0z0, x1y0z1, x1y1z1, x1y1z0)
@@ -133,8 +173,8 @@ class CameraInstance3DBoxes(BaseInstance3DBoxes):
 
         Args:
             angle (float, torch.Tensor): Rotation angle.
-            points (torch.Tensor, numpy.ndarray, optional): Points to rotate.
-                Defaults to None.
+            points (torch.Tensor, numpy.ndarray, :obj:`BasePoints`, optional):
+                Points to rotate. Defaults to None.
 
         Returns:
             tuple or None: When ``points`` is None, the function returns \
@@ -157,6 +197,9 @@ class CameraInstance3DBoxes(BaseInstance3DBoxes):
             elif isinstance(points, np.ndarray):
                 rot_mat_T = rot_mat_T.numpy()
                 points[:, :3] = np.dot(points[:, :3], rot_mat_T)
+            elif isinstance(points, BasePoints):
+                # clockwise
+                points.rotate(-angle)
             else:
                 raise ValueError
             return points, rot_mat_T
@@ -168,8 +211,8 @@ class CameraInstance3DBoxes(BaseInstance3DBoxes):
 
         Args:
             bev_direction (str): Flip direction (horizontal or vertical).
-            points (torch.Tensor, numpy.ndarray, None): Points to flip.
-                Defaults to None.
+            points (torch.Tensor, numpy.ndarray, :obj:`BasePoints`, None):
+                Points to flip. Defaults to None.
 
         Returns:
             torch.Tensor, numpy.ndarray or None: Flipped points.
@@ -185,11 +228,14 @@ class CameraInstance3DBoxes(BaseInstance3DBoxes):
                 self.tensor[:, 6] = -self.tensor[:, 6]
 
         if points is not None:
-            assert isinstance(points, (torch.Tensor, np.ndarray))
-            if bev_direction == 'horizontal':
-                points[:, 0] = -points[:, 0]
-            elif bev_direction == 'vertical':
-                points[:, 2] = -points[:, 2]
+            assert isinstance(points, (torch.Tensor, np.ndarray, BasePoints))
+            if isinstance(points, (torch.Tensor, np.ndarray)):
+                if bev_direction == 'horizontal':
+                    points[:, 0] = -points[:, 0]
+                elif bev_direction == 'vertical':
+                    points[:, 2] = -points[:, 2]
+            elif isinstance(points, BasePoints):
+                points.flip(bev_direction)
             return points
 
     def in_range_bev(self, box_range):
@@ -250,7 +296,7 @@ class CameraInstance3DBoxes(BaseInstance3DBoxes):
 
         Args:
             dst (:obj:`BoxMode`): The target Box mode.
-            rt_mat (np.dnarray | torch.Tensor): The rotation and translation
+            rt_mat (np.ndarray | torch.Tensor): The rotation and translation
                 matrix between different coordinates. Defaults to None.
                 The conversion from ``src`` coordinates to ``dst`` coordinates
                 usually comes along the change of sensors, e.g., from camera
