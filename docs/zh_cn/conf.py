@@ -11,9 +11,10 @@
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
 import os
-import pytorch_sphinx_theme
 import subprocess
 import sys
+
+import pytorch_sphinx_theme
 from m2r import MdInclude
 from recommonmark.transform import AutoStructify
 from sphinx.builders.html import StandaloneHTMLBuilder
@@ -47,7 +48,7 @@ extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.napoleon',
     'sphinx.ext.viewcode',
-    'recommonmark',
+    'myst_parser',
     'sphinx_markdown_tables',
     'sphinx.ext.autosectionlabel',
     'sphinx_copybutton',
@@ -135,10 +136,11 @@ latex_documents = [
 StandaloneHTMLBuilder.supported_image_types = [
     'image/svg+xml', 'image/gif', 'image/png', 'image/jpeg'
 ]
-# -- Extension configuration -------------------------------------------------
-# Ignore >>> when copying code
-copybutton_prompt_text = r'>>> |\.\.\. '
-copybutton_prompt_is_regexp = True
+# Enable ::: for my_st
+myst_enable_extensions = ['colon_fence']
+myst_heading_anchors = 3
+
+language = 'zh_CN'
 
 
 def builder_inited_handler(app):

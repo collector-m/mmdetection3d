@@ -9,6 +9,7 @@ For high-level apis easier to integrated into other projects and basic demos, pl
 ### Test existing models on standard datasets
 
 - single GPU
+- CPU
 - single node multiple GPU
 - multiple node
 
@@ -18,11 +19,20 @@ You can use the following commands to test a dataset.
 # single-gpu testing
 python tools/test.py ${CONFIG_FILE} ${CHECKPOINT_FILE} [--out ${RESULT_FILE}] [--eval ${EVAL_METRICS}] [--show] [--show-dir ${SHOW_DIR}]
 
+# CPU: disable GPUs and run single-gpu testing script (experimental)
+export CUDA_VISIBLE_DEVICES=-1
+python tools/test.py ${CONFIG_FILE} ${CHECKPOINT_FILE} [--out ${RESULT_FILE}] [--eval ${EVAL_METRICS}] [--show] [--show-dir ${SHOW_DIR}]
+
 # multi-gpu testing
 ./tools/dist_test.sh ${CONFIG_FILE} ${CHECKPOINT_FILE} ${GPU_NUM} [--out ${RESULT_FILE}] [--eval ${EVAL_METRICS}]
 ```
 
+**Note**:
+
+For now, CPU testing is only supported for SMOKE.
+
 Optional arguments:
+
 - `RESULT_FILE`: Filename of the output results in pickle format. If not specified, the results will not be saved to a file.
 - `EVAL_METRICS`: Items to be evaluated on the results. Allowed values depend on the dataset. Typically we default to use official metrics for evaluation on different datasets, so it can be simply set to `mAP` as a placeholder for detection tasks, which applies to nuScenes, Lyft, ScanNet and SUNRGBD. For KITTI, if we only want to evaluate the 2D detection performance, we can simply set the metric to `img_bbox` (unstable, stay tuned). For Waymo, we provide both KITTI-style evaluation (unstable) and Waymo-style official protocol, corresponding to metric `kitti` and `waymo` respectively. We recommend to use the default official metric for stable performance and fair comparison with other methods. Similarly, the metric can be set to `mIoU` for segmentation tasks, which applies to S3DIS and ScanNet.
 - `--show`: If specified, detection results will be plotted in the silient mode. It is only applicable to single GPU testing and used for debugging and visualization. This should be used with `--show-dir`.
@@ -57,7 +67,7 @@ Assume that you have already downloaded the checkpoints to the directory `checkp
        --eval mAP
    ```
 
-4. Test SECOND with 8 GPUs, and evaluate the mAP.
+4. Test SECOND on KITTI with 8 GPUs, and evaluate the mAP.
 
    ```shell
    ./tools/slurm_test.sh ${PARTITION} ${JOB_NAME} configs/second/hv_second_secfpn_6x8_80e_kitti-3d-3class.py \
@@ -96,7 +106,7 @@ Assume that you have already downloaded the checkpoints to the directory `checkp
 
    **Notice**: To generate submissions on Lyft, `csv_savepath` must be given in the `--eval-options`. After generating the csv file, you can make a submission with kaggle commands given on the [website](https://www.kaggle.com/c/3d-object-detection-for-autonomous-vehicles/submit).
 
-   Note that in the [config of Lyft dataset](../configs/_base_/datasets/lyft-3d.py), the value of `ann_file` keyword in `test` is `data_root + 'lyft_infos_test.pkl'`, which is the official test set of Lyft without annotation. To test on the validation set, please change this to `data_root + 'lyft_infos_val.pkl'`.
+   Note that in the [config of Lyft dataset](../../configs/_base_/datasets/lyft-3d.py), the value of `ann_file` keyword in `test` is `data_root + 'lyft_infos_test.pkl'`, which is the official test set of Lyft without annotation. To test on the validation set, please change this to `data_root + 'lyft_infos_val.pkl'`.
 
 8. Test PointPillars on waymo with 8 GPUs, and evaluate the mAP with waymo metrics.
 
@@ -145,6 +155,20 @@ python tools/train.py ${CONFIG_FILE} [optional arguments]
 
 If you want to specify the working directory in the command, you can add an argument `--work-dir ${YOUR_WORK_DIR}`.
 
+### Training with CPU (experimental)
+
+The process of training on the CPU is consistent with single GPU training. We just need to disable GPUs before the training process.
+
+```shell
+export CUDA_VISIBLE_DEVICES=-1
+```
+
+And then run the script of train with a single GPU.
+
+**Note**:
+
+For now, most of the point cloud related algorithms rely on 3D CUDA op, which can not be trained on CPU. Some monocular 3D object detection algorithms, like FCOS3D and SMOKE can be trained on CPU. We do not recommend users to use CPU for training because it is too slow. We support this feature to allow users to debug certain models on machines without GPU for convenience.
+
 ### Train with multiple GPUs
 
 ```shell
@@ -159,6 +183,7 @@ Optional arguments are:
 - `--options 'Key=value'`: Override some settings in the used config.
 
 Difference between `resume-from` and `load-from`:
+
 - `resume-from` loads both the model weights and optimizer status, and the epoch is also inherited from the specified checkpoint. It is usually used for resuming the training process that is interrupted accidentally.
 - `load-from` only loads the model weights and the training epoch starts from 0. It is usually used for finetuning.
 
@@ -178,8 +203,20 @@ GPUS=16 ./tools/slurm_train.sh dev pp_kitti_3class hv_pointpillars_secfpn_6x8_16
 
 You can check [slurm_train.sh](https://github.com/open-mmlab/mmdetection/blob/master/tools/slurm_train.sh) for full arguments and environment variables.
 
-If you have just multiple machines connected with ethernet, you can refer to
-PyTorch [launch utility](https://pytorch.org/docs/stable/distributed.html).
+If you launch with multiple machines simply connected with ethernet, you can simply run following commands:
+
+On the first machine:
+
+```shell
+NNODES=2 NODE_RANK=0 PORT=$MASTER_PORT MASTER_ADDR=$MASTER_ADDR ./tools/dist_train.sh $CONFIG $GPUS
+```
+
+On the second machine:
+
+```shell
+NNODES=2 NODE_RANK=1 PORT=$MASTER_PORT MASTER_ADDR=$MASTER_ADDR ./tools/dist_train.sh $CONFIG $GPUS
+```
+
 Usually it is slow if you do not have high speed networking like InfiniBand.
 
 ### Launch multiple jobs on a single machine

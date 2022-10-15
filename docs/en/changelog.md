@@ -1,5 +1,295 @@
 ## Changelog
 
+### v1.0.0rc5 (11/10/2022)
+
+#### New Features
+
+- Support ImVoxelNet on SUN RGB-D (#1738)
+
+#### Improvements
+
+- Fix the cross-codebase reference problem in metafile README (#1644)
+- Update the Chinese documentation about getting started (#1715)
+- Fix docs link and add docs link checker (#1811)
+
+#### Bug Fixes
+
+- Fix a visualization bug that is potentially triggered by empty prediction labels (#1725)
+- Fix point cloud segmentation visualization bug due to wrong parameter passing (#1858)
+- Fix Nan loss bug during PointRCNN training (#1874)
+
+#### Contributors
+
+A total of 9 developers contributed to this release.
+
+@ZwwWayne, @Tai-Wang, @filaPro, @VVsssssk, @ZCMax, @Xiangxu-0103, @holtvogt, @tpoisonooo, @lianqing01
+
+### v1.0.0rc4 (8/8/2022)
+
+#### Highlights
+
+- Support [FCAF3D](https://arxiv.org/pdf/2112.00322.pdf)
+
+#### New Features
+
+- Support [FCAF3D](https://arxiv.org/pdf/2112.00322.pdf) (#1547)
+- Add the transformation to support multi-camera 3D object detection (#1580)
+- Support lift-splat-shoot view transformer (#1598)
+
+#### Improvements
+
+- Remove the limitation of the maximum number of points during SUN RGB-D preprocessing (#1555)
+- Support circle CI (#1647)
+- Add mim to extras_require in setup.py (#1560, #1574)
+- Update dockerfile package version (#1697)
+
+#### Bug Fixes
+
+- Flip yaw angle for DepthInstance3DBoxes.overlaps (#1548, #1556)
+- Fix DGCNN configs (#1587)
+- Fix bbox head not registered bug (#1625)
+- Fix missing objects in S3DIS preprocessing (#1665)
+- Fix spconv2.0 model loading bug (#1699)
+
+#### Contributors
+
+A total of 9 developers contributed to this release.
+
+@Tai-Wang, @ZwwWayne, @filaPro, @lianqing11, @ZCMax, @HuangJunJie2017, @Xiangxu-0103, @ChonghaoSima, @VVsssssk
+
+### v1.0.0rc3 (8/6/2022)
+
+#### Highlights
+
+- Support [SA-SSD](https://openaccess.thecvf.com/content_CVPR_2020/papers/He_Structure_Aware_Single-Stage_3D_Object_Detection_From_Point_Cloud_CVPR_2020_paper.pdf)
+
+#### New Features
+
+- Support [SA-SSD](https://openaccess.thecvf.com/content_CVPR_2020/papers/He_Structure_Aware_Single-Stage_3D_Object_Detection_From_Point_Cloud_CVPR_2020_paper.pdf) (#1337)
+
+#### Improvements
+
+- Add Chinese documentation for vision-only 3D detection (#1438)
+- Update CenterPoint pretrained models that are compatible with refactored coordinate systems (#1450)
+- Configure myst-parser to parse anchor tag in the documentation (#1488)
+- Replace markdownlint with mdformat for avoiding installing ruby (#1489)
+- Add missing `gt_names` when getting annotation info in Custom3DDataset (#1519)
+- Support S3DIS full ceph training (#1542)
+- Rewrite the installation and FAQ documentation (#1545)
+
+#### Bug Fixes
+
+- Fix the incorrect registry name when building RoI extractors (#1460)
+- Fix the potential problems caused by the registry scope update when composing pipelines (#1466) and using CocoDataset (#1536)
+- Fix the missing selection with `order` in the [box3d_nms](https://github.com/open-mmlab/mmdetection3d/blob/master/mmdet3d/core/post_processing/box3d_nms.py) introduced by [#1403](https://github.com/open-mmlab/mmdetection3d/pull/1403) (#1479)
+- Update the [PointPillars config](https://github.com/open-mmlab/mmdetection3d/blob/master/configs/pointpillars/hv_pointpillars_secfpn_6x8_160e_kitti-3d-car.py) to make it consistent with the log (#1486)
+- Fix heading anchor in documentation (#1490)
+- Fix the compatibility of mmcv in the dockerfile (#1508)
+- Make overwrite_spconv packaged when building whl (#1516)
+- Fix the requirement of mmcv and mmdet (#1537)
+- Update configs of PartA2 and support its compatibility with spconv 2.0 (#1538)
+
+#### Contributors
+
+A total of 13 developers contributed to this release.
+
+@Xiangxu-0103, @ZCMax, @jshilong, @filaPro, @atinfinity, @Tai-Wang, @wenbo-yu, @yi-chen-isuzu, @ZwwWayne, @wchen61, @VVsssssk, @AlexPasqua, @lianqing11
+
+### v1.0.0rc2 (1/5/2022)
+
+#### Highlights
+
+- Support spconv 2.0
+- Support MinkowskiEngine with MinkResNet
+- Support training models on custom datasets with only point clouds
+- Update Registry to distinguish the scope of built functions
+- Replace mmcv.iou3d with a set of bird-eye-view (BEV) operators to unify the operations of rotated boxes
+
+#### New Features
+
+- Add loader arguments in the configuration files (#1388)
+- Support [spconv 2.0](https://github.com/traveller59/spconv) when the package is installed. Users can still use spconv 1.x in MMCV with CUDA 9.0 (only cost more memory) without losing the compatibility of model weights between two versions (#1421)
+- Support MinkowskiEngine with MinkResNet (#1422)
+
+#### Improvements
+
+- Add the documentation for model deployment (#1373, #1436)
+- Add Chinese documentation of
+  - Speed benchmark (#1379)
+  - LiDAR-based 3D detection (#1368)
+  - LiDAR 3D segmentation (#1420)
+  - Coordinate system refactoring (#1384)
+- Support training models on custom datasets with only point clouds (#1393)
+- Replace mmcv.iou3d with a set of bird-eye-view (BEV) operators to unify the operations of rotated boxes (#1403, #1418)
+- Update Registry to distinguish the scope of building functions (#1412, #1443)
+- Replace recommonmark with myst_parser for documentation rendering (#1414)
+
+#### Bug Fixes
+
+- Fix the show pipeline in the [browse_dataset.py](https://github.com/open-mmlab/mmdetection3d/blob/master/tools/misc/browse_dataset.py) (#1376)
+- Fix missing __init__ files after coordinate system refactoring (#1383)
+- Fix the incorrect yaw in the visualization caused by coordinate system refactoring (#1407)
+- Fix `NaiveSyncBatchNorm1d` and `NaiveSyncBatchNorm2d` to support non-distributed cases and more general inputs (#1435)
+
+#### Contributors
+
+A total of 11 developers contributed to this release.
+
+@ZCMax, @ZwwWayne, @Tai-Wang, @VVsssssk, @HanaRo, @JoeyforJoy, @ansonlcy, @filaPro, @jshilong, @Xiangxu-0103, @deleomike
+
+### v1.0.0rc1 (1/4/2022)
+
+#### Compatibility
+
+- We migrate all the mmdet3d ops to mmcv and do not need to compile them when installing mmdet3d.
+- To fix the imprecise timestamp and optimize its saving method, we reformat the point cloud data during Waymo data conversion. The data conversion time is also optimized significantly by supporting parallel processing. Please re-generate KITTI format Waymo data if necessary. See more details in the [compatibility documentation](https://github.com/open-mmlab/mmdetection3d/blob/master/docs/en/compatibility.md).
+- We update some of the model checkpoints after the refactor of coordinate systems. Please stay tuned for the release of the remaining model checkpoints.
+
+|               | Fully Updated | Partially Updated | In Progress | No Influcence |
+| ------------- | :-----------: | :---------------: | :---------: | :-----------: |
+| SECOND        |               |         ✓         |             |               |
+| PointPillars  |               |         ✓         |             |               |
+| FreeAnchor    |       ✓       |                   |             |               |
+| VoteNet       |       ✓       |                   |             |               |
+| H3DNet        |       ✓       |                   |             |               |
+| 3DSSD         |               |         ✓         |             |               |
+| Part-A2       |       ✓       |                   |             |               |
+| MVXNet        |       ✓       |                   |             |               |
+| CenterPoint   |               |                   |      ✓      |               |
+| SSN           |       ✓       |                   |             |               |
+| ImVoteNet     |       ✓       |                   |             |               |
+| FCOS3D        |               |                   |             |       ✓       |
+| PointNet++    |               |                   |             |       ✓       |
+| Group-Free-3D |               |                   |             |       ✓       |
+| ImVoxelNet    |       ✓       |                   |             |               |
+| PAConv        |               |                   |             |       ✓       |
+| DGCNN         |               |                   |             |       ✓       |
+| SMOKE         |               |                   |             |       ✓       |
+| PGD           |               |                   |             |       ✓       |
+| MonoFlex      |               |                   |             |       ✓       |
+
+#### Highlights
+
+- Migrate all the mmdet3d ops to mmcv
+- Support parallel waymo data converter
+- Add ScanNet instance segmentation dataset with metrics
+- Better compatibility for windows with CI support, op migration and bug fixes
+- Support loading annotations from Ceph
+
+#### New Features
+
+- Add ScanNet instance segmentation dataset with metrics (#1230)
+- Support different random seeds for different ranks (#1321)
+- Support loading annotations from Ceph (#1325)
+- Support resuming from the latest checkpoint automatically (#1329)
+- Add windows CI (#1345)
+
+#### Improvements
+
+- Update the table format and OpenMMLab project orders in [README.md](https://github.com/open-mmlab/mmdetection3d/blob/master/README.md) (#1272, #1283)
+- Migrate all the mmdet3d ops to mmcv (#1240, #1286, #1290, #1333)
+- Add `with_plane` flag in the KITTI data conversion (#1278)
+- Update instructions and links in the documentation (#1300, 1309, #1319)
+- Support parallel Waymo dataset converter and ground truth database generator (#1327)
+- Add quick installation commands to [getting_started.md](https://github.com/open-mmlab/mmdetection3d/blob/master/docs/en/getting_started.md) (#1366)
+
+#### Bug Fixes
+
+- Update nuimages configs to use new nms config style (#1258)
+- Fix the usage of np.long for windows compatibility (#1270)
+- Fix the incorrect indexing in `BasePoints` (#1274)
+- Fix the incorrect indexing in the [pillar_scatter.forward_single](https://github.com/open-mmlab/mmdetection3d/blob/dev/mmdet3d/models/middle_encoders/pillar_scatter.py#L38) (#1280)
+- Fix unit tests that use GPUs (#1301)
+- Fix incorrect feature dimensions in `DynamicPillarFeatureNet` caused by previous upgrading of `PillarFeatureNet` (#1302)
+- Remove the `CameraPoints` constraint in `PointSample` (#1314)
+- Fix imprecise timestamps saving of Waymo dataset (#1327)
+
+#### Contributors
+
+A total of 9 developers contributed to this release.
+
+@ZCMax, @ZwwWayne, @wHao-Wu, @Tai-Wang, @wangruohui, @zjwzcx, @Xiangxu-0103, @EdAyers, @hongye-dev, @zhanggefan
+
+### v1.0.0rc0 (18/2/2022)
+
+#### Compatibility
+
+- We refactor our three coordinate systems to make their rotation directions and origins more consistent, and further remove unnecessary hacks in different datasets and models. Therefore, please re-generate data infos or convert the old version to the new one with our provided scripts. We will also provide updated checkpoints in the next version. Please refer to the [compatibility documentation](https://github.com/open-mmlab/mmdetection3d/blob/v1.0.0.dev0/docs/en/compatibility.md) for more details.
+- Unify the camera keys for consistent transformation between coordinate systems on different datasets. The modification changes the key names to `lidar2img`, `depth2img`, `cam2img`, etc., for easier understanding. Customized codes using legacy keys may be influenced.
+- The next release will begin to move files of CUDA ops to [MMCV](https://github.com/open-mmlab/mmcv). It will influence the way to import related functions. We will not break the compatibility but will raise a warning first and please prepare to migrate it.
+
+#### Highlights
+
+- Support new monocular 3D detectors: [PGD](https://github.com/open-mmlab/mmdetection3d/tree/v1.0.0.dev0/configs/pgd), [SMOKE](https://github.com/open-mmlab/mmdetection3d/tree/v1.0.0.dev0/configs/smoke), [MonoFlex](https://github.com/open-mmlab/mmdetection3d/tree/v1.0.0.dev0/configs/monoflex)
+- Support a new LiDAR-based detector: [PointRCNN](https://github.com/open-mmlab/mmdetection3d/tree/v1.0.0.dev0/configs/point_rcnn)
+- Support a new backbone: [DGCNN](https://github.com/open-mmlab/mmdetection3d/tree/v1.0.0.dev0/configs/dgcnn)
+- Support 3D object detection on the S3DIS dataset
+- Support compilation on Windows
+- Full benchmark for PAConv on S3DIS
+- Further enhancement for documentation, especially on the Chinese documentation
+
+#### New Features
+
+- Support 3D object detection on the S3DIS dataset (#835)
+- Support PointRCNN (#842, #843, #856, #974, #1022, #1109, #1125)
+- Support DGCNN (#896)
+- Support PGD (#938, #940, #948, #950, #964, #1014, #1065, #1070, #1157)
+- Support SMOKE (#939, #955, #959, #975, #988, #999, #1029)
+- Support MonoFlex (#1026, #1044, #1114, #1115, #1183)
+- Support CPU Training (#1196)
+
+#### Improvements
+
+- Support point sampling based on distance metric (#667, #840)
+- Refactor coordinate systems (#677, #774, #803, #899, #906, #912, #968, #1001)
+- Unify camera keys in PointFusion and transformations between different systems (#791, #805)
+- Refine documentation (#792, #827, #829, #836, #849, #854, #859, #1111, #1113, #1116, #1121, #1132, #1135, #1185, #1193, #1226)
+- Add a script to support benchmark regression (#808)
+- Benchmark PAConvCUDA on S3DIS (#847)
+- Support to download pdf and epub documentation (#850)
+- Change the `repeat` setting in Group-Free-3D configs to reduce training epochs (#855)
+- Support KITTI AP40 evaluation metric (#927)
+- Add the mmdet3d2torchserve tool for SECOND (#977)
+- Add code-spell pre-commit hook and fix typos (#995)
+- Support the latest numba version (#1043)
+- Set a default seed to use when the random seed is not specified (#1072)
+- Distribute mix-precision models to each algorithm folder (#1074)
+- Add abstract and a representative figure for each algorithm (#1086)
+- Upgrade pre-commit hook (#1088, #1217)
+- Support augmented data and ground truth visualization (#1092)
+- Add local yaw property for `CameraInstance3DBoxes` (#1130)
+- Lock the required numba version to 0.53.0 (#1159)
+- Support the usage of plane information for KITTI dataset (#1162)
+- Deprecate the support for "python setup.py test" (#1164)
+- Reduce the number of multi-process threads to accelerate training (#1168)
+- Support 3D flip augmentation for semantic segmentation (#1181)
+- Update README format for each model (#1195)
+
+#### Bug Fixes
+
+- Fix compiling errors on Windows (#766)
+- Fix the deprecated nms setting in the ImVoteNet config (#828)
+- Use the latest `wrap_fp16_model` import from mmcv (#861)
+- Remove 2D annotations generation on Lyft (#867)
+- Update index files for the Chinese documentation to be consistent with the English version (#873)
+- Fix the nested list transpose in the CenterPoint head (#879)
+- Fix deprecated pretrained model loading for RegNet (#889)
+- Fix the incorrect dimension indices of rotations and testing config in the CenterPoint test time augmentation (#892)
+- Fix and improve visualization tools (#956, #1066, #1073)
+- Fix PointPillars FLOPs calculation error (#1075)
+- Fix missing dimension information in the SUN RGB-D data generation (#1120)
+- Fix incorrect anchor range settings in the PointPillars [config](https://github.com/open-mmlab/mmdetection3d/blob/master/configs/_base_/models/hv_pointpillars_secfpn_kitti.py) for KITTI (#1163)
+- Fix incorrect model information in the RegNet metafile (#1184)
+- Fix bugs in non-distributed multi-gpu training and testing (#1197)
+- Fix a potential assertion error when generating corners from an empty box (#1212)
+- Upgrade bazel version according to the requirement of Waymo Devkit (#1223)
+
+#### Contributors
+
+A total of 12 developers contributed to this release.
+
+@THU17cyz, @wHao-Wu, @wangruohui, @Wuziyi616, @filaPro, @ZwwWayne, @Tai-Wang, @DCNSW, @xieenze, @robin-karlsson0, @ZCMax, @Otteri
+
 ### v0.18.1 (1/2/2022)
 
 #### Improvements
@@ -218,7 +508,6 @@ A total of 12 developers contributed to this release.
 
 @yinchimaoliang, @gopi231091, @filaPro, @ZwwWayne, @ZCMax, @hjin2902, @wHao-Wu, @Wuziyi616, @xiliu8006, @THU17cyz, @DCNSW, @Tai-Wang
 
-
 ### v0.15.0 (1/7/2021)
 
 #### Compatibility
@@ -253,7 +542,6 @@ In order to fix the problem that the priority of EvalHook is too low, all hook p
 - Add documentation for vision-only 3D detection (#669)
 - Refine docs for Quick Run and Useful Tools (#686)
 
-
 #### Bug Fixes
 
 - Fix the bug of [BackgroundPointsFilter](https://github.com/open-mmlab/mmdetection3d/blob/master/mmdet3d/datasets/pipelines/transforms_3d.py) using the bottom center of ground truth (#609)
@@ -262,10 +550,10 @@ In order to fix the problem that the priority of EvalHook is too low, all hook p
 - Fix test commands in docs and make some refinements (#635)
 - Fix wrong config paths in unit tests (#641)
 
-
 ### v0.14.0 (1/6/2021)
 
 #### Highlights
+
 - Support the point cloud segmentation method [PointNet++](https://arxiv.org/abs/1706.02413)
 
 #### New Features
@@ -286,16 +574,17 @@ In order to fix the problem that the priority of EvalHook is too low, all hook p
 - Remove a useless parameter `label_weight` from segmentation datasets including `Custom3DSegDataset`, `ScanNetSegDataset` and `S3DISSegDataset` (#607)
 
 #### Bug Fixes
+
 - Fix a corrupted lidar data file in Lyft dataset in [data_preparation](https://github.com/open-mmlab/mmdetection3d/tree/master/docs/data_preparation.md) (#546)
 - Fix evaluation bugs in nuScenes and Lyft dataset (#549)
 - Fix converting points between coordinates with specific transformation matrix in the [coord_3d_mode.py](https://github.com/open-mmlab/mmdetection3d/blob/master/mmdet3d/core/bbox/structures/coord_3d_mode.py) (#556)
 - Support PointPillars models on Lyft dataset (#578)
 - Fix the bug of demo with pre-trained VoteNet model on ScanNet (#600)
 
-
 ### v0.13.0 (1/5/2021)
 
 #### Highlights
+
 - Support a monocular 3D detection method [FCOS3D](https://arxiv.org/abs/2104.10956)
 - Support ScanNet and S3DIS semantic segmentation dataset
 - Enhancement of visualization tools for dataset browsing and demos, including support of visualization for multi-modality data and point cloud segmentation.
@@ -550,7 +839,7 @@ In order to fix the problem that the priority of EvalHook is too low, all hook p
 
 - Support Batch Inference (#95, #103, #116): MMDetection3D v0.6.0 migrates to support batch inference based on MMDetection >= v2.4.0. This change influences all the test APIs in MMDetection3D and downstream codebases.
 - Start to use collect environment function from MMCV (#113): MMDetection3D v0.6.0 migrates to use `collect_env` function in MMCV.
-`get_compiler_version` and `get_compiling_cuda_version` compiled in `mmdet3d.ops.utils` are removed. Please import these two functions from `mmcv.ops`.
+  `get_compiler_version` and `get_compiling_cuda_version` compiled in `mmdet3d.ops.utils` are removed. Please import these two functions from `mmcv.ops`.
 
 #### New Features
 
